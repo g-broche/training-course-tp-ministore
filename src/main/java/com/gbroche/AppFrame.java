@@ -1,0 +1,29 @@
+package com.gbroche;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+
+import com.gbroche.view.MainPanel;
+import com.gbroche.view.components.MenuBar;
+
+public class AppFrame extends JFrame {
+
+    private MainPanel mainPanel;
+    private MenuBar menu;
+
+    public AppFrame() {
+        setTitle("MiniStore ERP");
+        setSize(1000, 600);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
+
+        menu = new MenuBar();
+        mainPanel = new MainPanel();
+        setJMenuBar(menu);
+        add(mainPanel, BorderLayout.CENTER);
+
+        menu.setListenerClientIndex(e -> mainPanel.showView("CustomerIndex"));
+    }
+}

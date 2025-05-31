@@ -1,7 +1,13 @@
 package com.gbroche;
 
+import javax.swing.SwingUtilities;
+
 public class Main {
+
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        SwingUtilities.invokeLater(() -> {
+            AppFrame frame = new AppFrame();
+            frame.setVisible(true);
+        });
     }
 }
