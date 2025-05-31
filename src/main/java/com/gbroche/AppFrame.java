@@ -10,7 +10,7 @@ import com.gbroche.view.components.MenuBar;
 public class AppFrame extends JFrame {
 
     private MainPanel mainPanel;
-    private MenuBar menu;
+    private final MenuBar menu;
 
     public AppFrame() {
         setTitle("MiniStore ERP");

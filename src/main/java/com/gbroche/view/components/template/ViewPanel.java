@@ -13,7 +13,7 @@ public abstract class ViewPanel extends JPanel {
 
     private String title;
     private final JLabel titleLabel;
-    private JPanel contentPanel;
+    private final JPanel contentPanel;
 
     public ViewPanel(String title) {
         setLayout(new BorderLayout());

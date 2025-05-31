@@ -9,7 +9,7 @@ import com.gbroche.dao.CustomerDao;
 import com.gbroche.model.Customer;
 import com.gbroche.view.components.template.ViewPanel;
 
-public class CustomerIndex extends ViewPanel {
+public final class CustomerIndex extends ViewPanel {
 
     private List<Customer> customers;
     private final CustomerDao customerDao;

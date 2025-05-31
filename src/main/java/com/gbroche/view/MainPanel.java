@@ -11,7 +11,7 @@ import com.gbroche.view.components.customer.CustomerIndex;
 
 public class MainPanel extends JPanel {
 
-    private JPanel dynamicContent;
+    private final JPanel dynamicContent;
     private final Map<String, JPanel> views = new HashMap<>();
 
     public MainPanel() {

@@ -16,7 +16,6 @@ public class MenuBar extends JMenuBar {
     private final JMenuItem resuplyIndex;
 
     public MenuBar() {
-        JMenuBar menuBar = new JMenuBar();
 
         JMenu fileMenu = new JMenu("File");
         this.exit = new JMenuItem("Exit");
