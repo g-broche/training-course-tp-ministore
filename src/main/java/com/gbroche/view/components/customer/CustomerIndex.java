@@ -30,6 +30,12 @@ public final class CustomerIndex extends ViewPanel {
         changeContent(scrollPane);
     }
 
+    public void updateTable() {
+        CustomerTableModel model = (CustomerTableModel) customerTable.getModel();
+        customers = customerDao.getCustomers();
+        model.updateWithData(customers);
+    }
+
     private JTable createTable(List<Customer> customers) {
         CustomerTableModel model = new CustomerTableModel(customers);
         JTable table = new JTable(model);
