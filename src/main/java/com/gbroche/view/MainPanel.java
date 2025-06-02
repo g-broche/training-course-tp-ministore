@@ -28,6 +28,9 @@ public class MainPanel extends JPanel {
                 JPanel newView = generateView(viewName);
                 views.put(viewName, newView);
                 dynamicContent.add(newView, viewName);
+            } else if (viewName.equals("CustomerIndex")) {
+                CustomerIndex customerIndexView = (CustomerIndex) views.get("CustomerIndex");
+                customerIndexView.updateTable();
             }
 
             CardLayout cl = (CardLayout) dynamicContent.getLayout();

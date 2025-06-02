@@ -8,7 +8,7 @@ import com.gbroche.model.Customer;
 
 public class CustomerTableModel extends AbstractTableModel {
 
-    private final List<Customer> customers;
+    private List<Customer> customers;
     private final String[] columnNames = {"ID", "Full Name", "Country", "State", "City"};
 
     public CustomerTableModel(List<Customer> customers) {
@@ -42,6 +42,11 @@ public class CustomerTableModel extends AbstractTableModel {
             default ->
                 null;
         };
+    }
+
+    public void updateWithData(List<Customer> newCustomers) {
+        this.customers = newCustomers;
+        fireTableDataChanged(); // Notifies the JTable to refresh its view
     }
 
     @Override
