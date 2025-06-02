@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
+import com.gbroche.view.components.customer.AddCustomerForm;
 import com.gbroche.view.components.customer.CustomerIndex;
 
 public class MainPanel extends JPanel {
@@ -46,6 +47,8 @@ public class MainPanel extends JPanel {
         return switch (viewName) {
             case "CustomerIndex" ->
                 new CustomerIndex();
+            case "CustomerAdd" ->
+                new AddCustomerForm();
             default ->
                 throw new IllegalArgumentException("Unknown view: " + viewName);
         };

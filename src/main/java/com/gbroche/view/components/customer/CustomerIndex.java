@@ -7,7 +7,7 @@ import javax.swing.JTable;
 
 import com.gbroche.dao.CustomerDao;
 import com.gbroche.model.Customer;
-import com.gbroche.view.components.template.ViewPanel;
+import com.gbroche.view.components.shared.ViewPanel;
 
 public final class CustomerIndex extends ViewPanel {
 

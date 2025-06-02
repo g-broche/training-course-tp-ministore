@@ -1,4 +1,4 @@
-package com.gbroche.view.components.template;
+package com.gbroche.view.components.shared;
 
 import java.awt.BorderLayout;
 import java.awt.Font;

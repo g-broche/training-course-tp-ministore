@@ -25,5 +25,6 @@ public class AppFrame extends JFrame {
         add(mainPanel, BorderLayout.CENTER);
 
         menu.setListenerClientIndex(e -> mainPanel.showView("CustomerIndex"));
+        menu.setListenerClientAdd(e -> mainPanel.showView("CustomerAdd"));
     }
 }
