@@ -2,12 +2,11 @@ package com.gbroche.view.components.shared.form.groups;
 
 import java.awt.event.ActionListener;
 
-import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 public class TextFieldInput implements FormInput {
 
-    private JTextField field;
+    private final JTextField field;
 
     public TextFieldInput() {
         field = new JTextField();

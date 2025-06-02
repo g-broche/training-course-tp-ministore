@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,22 +17,23 @@ import javax.swing.JScrollPane;
 
 import com.gbroche.dao.CityDao;
 import com.gbroche.dao.CountryDao;
+import com.gbroche.dao.CustomerDao;
 import com.gbroche.model.City;
 import com.gbroche.model.Country;
 import com.gbroche.view.components.shared.ViewPanel;
 import com.gbroche.view.components.shared.form.groups.ComboBoxInput;
 import com.gbroche.view.components.shared.form.groups.FormGroup;
+import com.gbroche.view.components.shared.form.groups.FormGroupInteger;
 import com.gbroche.view.components.shared.form.groups.TextFieldInput;
 import com.gbroche.view.components.shared.form.validators.EmailValidator;
 import com.gbroche.view.components.shared.form.validators.MaxIntegerValidator;
 import com.gbroche.view.components.shared.form.validators.MaxLengthValidator;
 import com.gbroche.view.components.shared.form.validators.MinIntegerValidator;
 import com.gbroche.view.components.shared.form.validators.MinLengthValidator;
-import com.gbroche.view.components.shared.form.validators.NumericValidator;
 import com.gbroche.view.components.shared.form.validators.RequiredValidator;
 import com.gbroche.view.components.shared.form.validators.Validator;
 
-public class AddCustomerForm extends ViewPanel {
+public final class AddCustomerForm extends ViewPanel {
 
     private JPanel form;
     private FormGroup firstNameField;
@@ -55,31 +57,12 @@ public class AddCustomerForm extends ViewPanel {
     private FormGroup genderField;
     private JButton submit;
 
-    private List<FormGroup> formGroups = new ArrayList<>();
+    private final List<FormGroup> formGroups = new ArrayList<>();
 
     private Map<String, String> countryMap = new LinkedHashMap<>();
     private Map<Integer, String> cityMap = new LinkedHashMap<>();
-    private String[] genders = new String[]{"M", "F", "N"};
+    private final String[] genders = new String[]{"M", "F", "N"};
 
-    // firstname_in character varying,
-    // lastname_in character varying,
-    // address1_in character varying,
-    // address2_in character varying,
-    // city_in character varying,
-    // state_in character varying,
-    // zip_in integer,
-    // country_in character varying,
-    // region_in integer,
-    // email_in character varying,
-    // phone_in character varying,
-    // creditcardtype_in integer,
-    // creditcard_in character varying,
-    // creditcardexpiration_in character varying,
-    // username_in character varying,
-    // password_in character varying,
-    // age_in integer,
-    // income_in integer,
-    // gender_in character varying,
     public AddCustomerForm() {
         super("Add Customer");
         buildContent();
@@ -95,20 +78,40 @@ public class AddCustomerForm extends ViewPanel {
         JScrollPane scrollPane = new JScrollPane(form);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        // submit.addActionListener(e
-        //         -> handleSubmit());
-        // form.add(submit);
+        fillFieldsForTest();
+        submit.addActionListener(e -> handleSubmit());
+
         changeContent(scrollPane);
     }
 
     private void handleSubmit() {
-        // nameField.clearError();
+        if (!isFormValid()) {
+            System.out.println("form is invalid");
+            return;
+        }
+        System.out.println("form is valid");
+        Map<String, String> inputResults = getInputsForBinding();
+        CustomerDao.getInstance().addCustomer(inputResults);
+    }
 
-        // if (nameField.isEmpty()) {
-        //     nameField.setError("Name is required");
-        // } else {
-        //     System.out.println("Submitted: " + nameField.getValue());
-        // }
+    private boolean isFormValid() {
+        List<Boolean> validationResults = new ArrayList<>();
+        for (FormGroup formGroup : formGroups) {
+            validationResults.add(formGroup.validateInput());
+        }
+        return !validationResults.isEmpty() && validationResults.stream().allMatch(Boolean::booleanValue);
+    }
+
+    private Map<String, String> getInputsForBinding() {
+        Map<String, String> inputResults = new HashMap<>();
+        for (FormGroup formGroup : formGroups) {
+            System.out.println(">>> formgroup: " + formGroup.getFieldName());
+            if (formGroup.validateInput()) {
+                System.out.println("fieldName: " + formGroup.getFieldName() + " ; value: " + formGroup.getValue());
+                inputResults.put(formGroup.getFieldName(), formGroup.getValue());
+            }
+        }
+        return inputResults;
     }
 
     private int createLayout() {
@@ -176,7 +179,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateFirstNameField() {
-        firstNameField = new FormGroup("First name", new TextFieldInput());
+        firstNameField = new FormGroup("firstname", "First name", new TextFieldInput());
         firstNameField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50)
@@ -185,7 +188,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateLastNameField() {
-        lastNameField = new FormGroup("Last name", new TextFieldInput());
+        lastNameField = new FormGroup("lastname", "Last name", new TextFieldInput());
         lastNameField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50)
@@ -194,7 +197,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateAddress1Field() {
-        address1Field = new FormGroup("Address", new TextFieldInput());
+        address1Field = new FormGroup("address1", "Address", new TextFieldInput());
         address1Field.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50)
@@ -203,7 +206,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateAddress2Field() {
-        address2Field = new FormGroup("Address (complement)", new TextFieldInput());
+        address2Field = new FormGroup("address2", "Address (complement)", new TextFieldInput());
         address2Field.addValidators(new Validator[]{
             new MaxLengthValidator(50)
         });
@@ -211,7 +214,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateCountryField() {
-        countryField = new FormGroup("Country", new ComboBoxInput(countryMap.keySet().toArray(new String[0])));
+        countryField = new FormGroup("country", "Country", new ComboBoxInput(countryMap.keySet().toArray(new String[0])));
         countryField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50)
@@ -230,7 +233,7 @@ public class AddCustomerForm extends ViewPanel {
 
     private void generateCityField() {
         loadAvailableCities(getCodeOfSelectedCountry());
-        cityField = new FormGroup("City", new ComboBoxInput(cityMap.values().toArray(new String[0])));
+        cityField = new FormGroup("city", "City", new ComboBoxInput(cityMap.values().toArray(new String[0])));
         cityField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50)
@@ -239,7 +242,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateStateField() {
-        stateField = new FormGroup("State", new TextFieldInput());
+        stateField = new FormGroup("state", "State", new TextFieldInput());
         stateField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50)
@@ -248,24 +251,21 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateZipField() {
-        zipField = new FormGroup("State", new TextFieldInput());
-        stateField.addValidators(new Validator[]{
-            new NumericValidator(),});
+        zipField = new FormGroupInteger("zip", "Zip", new TextFieldInput());
         formGroups.add(zipField);
     }
 
     private void generateRegionField() {
-        regionField = new FormGroup("Region", new TextFieldInput());
+        regionField = new FormGroupInteger("region", "Region", new TextFieldInput());
         regionField.addValidators(new Validator[]{
             new RequiredValidator(),
-            new NumericValidator(),
             new MaxIntegerValidator(65535)
         });
         formGroups.add(regionField);
     }
 
     private void generateEmailField() {
-        emailField = new FormGroup("Email", new TextFieldInput());
+        emailField = new FormGroup("email", "Email", new TextFieldInput());
         emailField.addValidators(new Validator[]{
             new RequiredValidator(),
             new EmailValidator(),
@@ -275,7 +275,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generatePhoneField() {
-        phoneField = new FormGroup("Phone", new TextFieldInput());
+        phoneField = new FormGroup("phone", "Phone", new TextFieldInput());
         phoneField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50),
@@ -285,17 +285,16 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateCreditCardTypeField() {
-        creditCardTypeField = new FormGroup("Credit card type", new TextFieldInput());
+        creditCardTypeField = new FormGroupInteger("creditcardtype", "Credit card type", new TextFieldInput());
         creditCardTypeField.addValidators(new Validator[]{
             new RequiredValidator(),
-            new NumericValidator(),
             new MaxIntegerValidator(65535)
         });
         formGroups.add(creditCardTypeField);
     }
 
     private void generateCreditCardField() {
-        creditCardField = new FormGroup("Card number", new TextFieldInput());
+        creditCardField = new FormGroup("creditcard", "Card number", new TextFieldInput());
         creditCardField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50),
@@ -305,17 +304,17 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateCreditCardExpirationField() {
-        creditCardExpirationField = new FormGroup("Expiration date", new TextFieldInput());
+        creditCardExpirationField = new FormGroup("creditcardexpiration", "Expiration date", new TextFieldInput());
         creditCardExpirationField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50),
-            new MinLengthValidator(10)
+            new MinLengthValidator(5)
         });
         formGroups.add(creditCardExpirationField);
     }
 
     private void generateUsernameField() {
-        usernameField = new FormGroup("Username", new TextFieldInput());
+        usernameField = new FormGroup("username", "Username", new TextFieldInput());
         usernameField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MaxLengthValidator(50)
@@ -324,7 +323,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generatePasswordField() {
-        passwordField = new FormGroup("Password", new TextFieldInput());
+        passwordField = new FormGroup("password", "Password", new TextFieldInput());
         passwordField.addValidators(new Validator[]{
             new RequiredValidator(),
             new MinLengthValidator(10),
@@ -334,7 +333,7 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateAgeField() {
-        ageField = new FormGroup("Age", new TextFieldInput());
+        ageField = new FormGroupInteger("age", "Age", new TextFieldInput());
         ageField.addValidators(new Validator[]{
             new MinIntegerValidator(16),
             new MaxIntegerValidator(130)
@@ -343,17 +342,15 @@ public class AddCustomerForm extends ViewPanel {
     }
 
     private void generateIncomeField() {
-        incomeField = new FormGroup("Income", new TextFieldInput());
+        incomeField = new FormGroupInteger("income", "Income", new TextFieldInput());
         incomeField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new NumericValidator(),
             new MinIntegerValidator(0)
         });
         formGroups.add(incomeField);
     }
 
     private void generateGenderField() {
-        genderField = new FormGroup("Gender", new ComboBoxInput(genders));
+        genderField = new FormGroup("gender", "Gender", new ComboBoxInput(genders));
         genderField.addValidators(new Validator[]{
             new MaxLengthValidator(1)
         });
@@ -400,5 +397,24 @@ public class AddCustomerForm extends ViewPanel {
             return null;
         }
         return countryMap.get(countryField.getValue());
+    }
+
+    private void fillFieldsForTest() {
+        firstNameField.setValue("firstname test");
+        lastNameField.setValue("lastname test");
+        address1Field.setValue("address 1 test");
+        address2Field.setValue("address 2 test");
+        stateField.setValue("state test");
+        zipField.setValue("12345");
+        regionField.setValue("45");
+        emailField.setValue("test@test.test");
+        phoneField.setValue("0123456789");
+        creditCardTypeField.setValue("3");
+        creditCardField.setValue("53892942494");
+        creditCardExpirationField.setValue("03/27");
+        usernameField.setValue("usernameTest");
+        passwordField.setValue("passwordTest");
+        ageField.setValue("27");
+        incomeField.setValue("40000");
     }
 }

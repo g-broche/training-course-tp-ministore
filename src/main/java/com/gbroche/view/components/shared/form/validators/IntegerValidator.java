@@ -1,6 +1,6 @@
 package com.gbroche.view.components.shared.form.validators;
 
-public class NumericValidator implements Validator {
+public class IntegerValidator implements Validator {
 
     @Override
     public boolean isValid(String value) {
@@ -8,7 +8,7 @@ public class NumericValidator implements Validator {
             return true;
         }
         try {
-            Double.parseDouble(value);
+            Integer.parseInt(value);
             return true;
         } catch (NumberFormatException e) {
             return false;
