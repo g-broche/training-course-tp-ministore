@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -73,12 +74,12 @@ public final class AddCustomerForm extends ViewPanel {
         form = new JPanel(new GridBagLayout());
         loadAvailableCountries();
         generateFields();
-        int nextRow = createLayout(); // Get the next available row index
+        int nextRow = createLayout(); // Get the next available row index to append the form button
         addButtonToView(nextRow);
         JScrollPane scrollPane = new JScrollPane(form);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        fillFieldsForTest();
+        // fillFieldsForTest();
         submit.addActionListener(e -> handleSubmit());
 
         changeContent(scrollPane);
@@ -91,7 +92,23 @@ public final class AddCustomerForm extends ViewPanel {
         }
         System.out.println("form is valid");
         Map<String, String> inputResults = getInputsForBinding();
-        CustomerDao.getInstance().addCustomer(inputResults);
+        boolean insertSuccess = CustomerDao.getInstance().addCustomer(inputResults);
+        if (!insertSuccess) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "An error occurred while attempting to add the user to the database, a user with similar data may already exist and cause a conflict",
+                    "Error creating new user",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+        JOptionPane.showMessageDialog(
+                null,
+                "User was successfully added",
+                "User created",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+        resetFields();
     }
 
     private boolean isFormValid() {
@@ -416,5 +433,27 @@ public final class AddCustomerForm extends ViewPanel {
         passwordField.setValue("passwordTest");
         ageField.setValue("27");
         incomeField.setValue("40000");
+    }
+
+    private void resetFields() {
+        firstNameField.setValue("");
+        lastNameField.setValue("");
+        address1Field.setValue("");
+        address2Field.setValue("");
+        stateField.setValue("");
+        zipField.setValue("");
+        regionField.setValue("");
+        emailField.setValue("");
+        phoneField.setValue("");
+        creditCardTypeField.setValue("");
+        creditCardField.setValue("");
+        creditCardExpirationField.setValue("");
+        usernameField.setValue("");
+        passwordField.setValue("");
+        ageField.setValue("");
+        incomeField.setValue("");
+        for (FormGroup formGroup : formGroups) {
+            formGroup.clearError();
+        }
     }
 }

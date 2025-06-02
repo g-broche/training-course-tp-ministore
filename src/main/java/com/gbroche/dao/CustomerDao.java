@@ -82,11 +82,19 @@ public class CustomerDao {
             stmt.setString(20, inputs.get("gender"));
             stmt.execute();
             int newId = stmt.getInt(1);
+            boolean isSuccess = newId > 0;
+            if (!isSuccess) {
+                throw new Exception("Failed to create user, an existing user may already have data conflicting with provided data for new customer");
+            }
             System.out.println("Created new customer with ID: " + newId);
             databaseService.closeConnection();
             return true;
         } catch (SQLException e) {
-            System.err.println("failed to create new customer, error: '" + e.getMessage() + "'");
+            System.err.println("Failed to create new customer, SQLerror: '" + e.getMessage() + "'");
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            System.err.println("Failed to create new customer, error: '" + e.getMessage() + "'");
             e.printStackTrace();
             return false;
         }
