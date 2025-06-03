@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 
 import com.gbroche.view.components.customer.AddCustomerForm;
 import com.gbroche.view.components.customer.CustomerIndex;
+import com.gbroche.view.components.product.ProductIndex;
 
 public class MainPanel extends JPanel {
 
@@ -31,6 +32,9 @@ public class MainPanel extends JPanel {
             } else if (viewName.equals("CustomerIndex")) {
                 CustomerIndex customerIndexView = (CustomerIndex) views.get("CustomerIndex");
                 customerIndexView.updateTable();
+            } else if (viewName.equals("ProductIndex")) {
+                ProductIndex productIndexView = (ProductIndex) views.get("ProductIndex");
+                productIndexView.updateView();
             }
 
             CardLayout cl = (CardLayout) dynamicContent.getLayout();
@@ -52,6 +56,8 @@ public class MainPanel extends JPanel {
                 new CustomerIndex();
             case "CustomerAdd" ->
                 new AddCustomerForm();
+            case "ProductIndex" ->
+                new ProductIndex();
             default ->
                 throw new IllegalArgumentException("Unknown view: " + viewName);
         };
