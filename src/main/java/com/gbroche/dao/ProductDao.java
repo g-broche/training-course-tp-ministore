@@ -31,7 +31,7 @@ public class ProductDao {
         try (Connection connection = databaseService.getConnection()) {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "SELECT p.*, c.categoryname FROM products p JOIN categories c ON p.category=c.category ORDER BY title"
+                    "SELECT p.*, c.categoryname, i.quan_in_stock FROM products p JOIN categories c ON p.category=c.category JOIN inventory i ON p.prod_id = i.prod_id ORDER BY title"
             );
             while (rs.next()) {
                 countriesFound.add(
@@ -40,6 +40,7 @@ public class ProductDao {
                                 rs.getString("categoryname"),
                                 rs.getString("title"),
                                 rs.getString("actor"),
+                                rs.getInt("quan_in_stock"),
                                 rs.getDouble("price"),
                                 rs.getInt("special")
                         )

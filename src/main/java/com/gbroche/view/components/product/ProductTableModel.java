@@ -9,7 +9,7 @@ import com.gbroche.model.Product;
 public class ProductTableModel extends AbstractTableModel {
 
     private List<Product> products;
-    private final String[] columnNames = {"ID", "Title", "Category", "Actor", "price"};
+    private final String[] columnNames = {"ID", "Title", "Category", "Actor", "Price", "Stock"};
 
     public ProductTableModel(List<Product> products) {
         this.products = products;
@@ -39,6 +39,8 @@ public class ProductTableModel extends AbstractTableModel {
                 p.getActor();
             case 4 ->
                 p.getPrice();
+            case 5 ->
+                p.getQuantity();
             default ->
                 null;
         };
