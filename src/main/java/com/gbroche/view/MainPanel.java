@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 
 import com.gbroche.view.components.customer.AddCustomerForm;
 import com.gbroche.view.components.customer.CustomerIndex;
+import com.gbroche.view.components.order.OrderHistory;
 import com.gbroche.view.components.order.OrderPlacement;
 import com.gbroche.view.components.product.ProductIndex;
 
@@ -64,6 +65,8 @@ public class MainPanel extends JPanel {
                 new ProductIndex();
             case "OrderPlacement" ->
                 new OrderPlacement();
+            case "OrderHistory" ->
+                new OrderHistory();
             default ->
                 throw new IllegalArgumentException("Unknown view: " + viewName);
         };

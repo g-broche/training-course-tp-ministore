@@ -13,6 +13,7 @@ public class MenuBar extends JMenuBar {
     private final JMenuItem clientAdd;
     private final JMenuItem productIndex;
     private final JMenuItem orderPlacement;
+    private final JMenuItem orderHistory;
     private final JMenuItem resuplyIndex;
 
     public MenuBar() {
@@ -34,7 +35,9 @@ public class MenuBar extends JMenuBar {
 
         JMenu orderMenu = new JMenu("Orders");
         this.orderPlacement = new JMenuItem("Place order");
+        this.orderHistory = new JMenuItem("Order history");
         orderMenu.add(this.orderPlacement);
+        orderMenu.add(this.orderHistory);
 
         JMenu resupplyMenu = new JMenu("Resupply");
         this.resuplyIndex = new JMenuItem("Required");
@@ -61,6 +64,10 @@ public class MenuBar extends JMenuBar {
 
     public void setListenerOrderPlacement(ActionListener listener) {
         this.orderPlacement.addActionListener(listener);
+    }
+
+    public void setListenerOrderHistory(ActionListener listener) {
+        this.orderHistory.addActionListener(listener);
     }
 
     public void setListenerResuplyIndex(ActionListener listener) {

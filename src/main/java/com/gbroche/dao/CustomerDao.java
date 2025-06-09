@@ -45,9 +45,39 @@ public class CustomerDao {
                                 rs.getString("state"),
                                 rs.getInt("zip"),
                                 rs.getString("country"),
-                                rs.getInt("region")
-                        )
-                );
+                                rs.getInt("region")));
+            }
+            databaseService.closeConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customersFound;
+    }
+
+    public List<Customer> getCustomersWithOrderHistory() {
+        List<Customer> customersFound = new ArrayList<>();
+        try (Connection connection = databaseService.getConnection()) {
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    """
+                            SELECT DISTINCT c.*
+                            FROM customers c
+                            JOIN orders o ON c.customerid = o.customerid
+                            ORDER BY customerid DESC
+                            """);
+            while (rs.next()) {
+                customersFound.add(
+                        new Customer(
+                                rs.getInt("customerid"),
+                                rs.getString("firstname"),
+                                rs.getString("lastname"),
+                                rs.getString("address1"),
+                                rs.getString("address2"),
+                                rs.getString("city"),
+                                rs.getString("state"),
+                                rs.getInt("zip"),
+                                rs.getString("country"),
+                                rs.getInt("region")));
             }
             databaseService.closeConnection();
         } catch (SQLException e) {
@@ -84,7 +114,8 @@ public class CustomerDao {
             int newId = stmt.getInt(1);
             boolean isSuccess = newId > 0;
             if (!isSuccess) {
-                throw new Exception("Failed to create user, an existing user may already have data conflicting with provided data for new customer");
+                throw new Exception(
+                        "Failed to create user, an existing user may already have data conflicting with provided data for new customer");
             }
             System.out.println("Created new customer with ID: " + newId);
             databaseService.closeConnection();

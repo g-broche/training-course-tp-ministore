@@ -41,7 +41,7 @@ public class DatabaseService {
     }
 
     public Connection getConnection() throws SQLException {
-        if (connection == null || !connection.isClosed()) {
+        if (connection == null || connection.isClosed()) {
             openConnection();
         }
         return connection;
@@ -73,5 +73,4 @@ public class DatabaseService {
             System.err.println("Failed to rollback transaction; error:'" + e.getMessage() + "'");
         }
     }
-
 }
