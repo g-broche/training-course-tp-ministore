@@ -6,9 +6,9 @@ public class Product {
     private final String category;
     private final String title;
     private final String actor;
-    private final int quantity;
+    private final Integer quantity;
     private final Double price;
-    private final int special;
+    private final Integer special;
 
     public Product(int id, String category, String title, String actor, int quantity, Double price, int special) {
         this.id = id;
@@ -18,6 +18,16 @@ public class Product {
         this.quantity = quantity;
         this.price = price;
         this.special = special;
+    }
+
+    public Product(int id, String category, String title, String actor) {
+        this.id = id;
+        this.category = category;
+        this.title = title;
+        this.actor = actor;
+        this.quantity = null;
+        this.price = null;
+        this.special = null;
     }
 
     public int getId() {

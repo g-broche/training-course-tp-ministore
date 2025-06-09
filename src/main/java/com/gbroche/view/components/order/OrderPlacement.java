@@ -82,7 +82,7 @@ public class OrderPlacement extends ViewPanel {
         orderButton.addActionListener(e -> placeOrder());
 
         Dimension comboPref = customerSelector.getPreferredSize();
-        customerSelector.setMaximumSize(new Dimension(200, comboPref.height)); // width is up to you
+        customerSelector.setMaximumSize(new Dimension(200, comboPref.height));
 
         Dimension buttonPref = orderButton.getPreferredSize();
         orderButton.setMaximumSize(new Dimension(buttonPref.width, buttonPref.height));
