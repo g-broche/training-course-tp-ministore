@@ -48,7 +48,7 @@ public class OrderDao {
                 throw new Exception("Failed to get id of new order");
             }
         } catch (Exception e) {
-            return null;
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -57,7 +57,6 @@ public class OrderDao {
         String insertOrderSQL = """
                 INSERT INTO orderlines (orderlineid, orderid, prod_id, quantity, orderdate)
                 VALUES (?, ?, ?, ?, ?)
-                RETURNING orderlineid
                 """;
         try {
             Integer productId = orderLine.getProduct().getId();
@@ -71,15 +70,11 @@ public class OrderDao {
             stmt.setInt(3, productId);
             stmt.setInt(4, quantity);
             stmt.setDate(5, java.sql.Date.valueOf(orderDate));
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt("orderlineid") > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException(e.getMessage());
         }
     }
 }

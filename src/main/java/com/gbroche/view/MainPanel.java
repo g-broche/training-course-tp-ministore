@@ -36,6 +36,9 @@ public class MainPanel extends JPanel {
             } else if (viewName.equals("ProductIndex")) {
                 ProductIndex productIndexView = (ProductIndex) views.get("ProductIndex");
                 productIndexView.updateView();
+            } else if (viewName.equals("OrderPlacement")) {
+                OrderPlacement orderPlacementView = (OrderPlacement) views.get("OrderPlacement");
+                orderPlacementView.updateView();
             }
 
             CardLayout cl = (CardLayout) dynamicContent.getLayout();

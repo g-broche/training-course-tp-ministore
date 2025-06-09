@@ -38,6 +38,9 @@ public class ProductOrderTableModel extends AbstractTableModel {
         return columnNames[col];
     }
 
+    /**
+     * Fill table content
+     */
     @Override
     public Object getValueAt(int row, int col) {
         Product product = products.get(row);
@@ -59,25 +62,35 @@ public class ProductOrderTableModel extends AbstractTableModel {
         };
     }
 
+    /**
+     * Set column for quantity to order as editable
+     */
     @Override
     public boolean isCellEditable(int row, int col) {
         return col == 5;
     }
 
+    /**
+     * Extra constraint and parsing on table editable row
+     */
     @Override
     public void setValueAt(Object value, int row, int col) {
         if (col == 5) {
             try {
                 int quantity = Integer.parseInt(value.toString());
-                quantities.set(row, Math.max(quantity, 0)); // no negatives
+                quantities.set(row, Math.max(quantity, 0));
                 fireTableCellUpdated(row, col);
-                System.out.println(">>> Set quantity for row " + row + " to " + quantity);
             } catch (NumberFormatException ignored) {
                 quantities.set(row, 0);
             }
         }
     }
 
+    /**
+     * Updates table with list of products to display
+     * 
+     * @param newProducts
+     */
     public void updateWithData(List<Product> newProducts) {
         this.products = newProducts;
         this.quantities = new ArrayList<>();
@@ -87,13 +100,18 @@ public class ProductOrderTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    /**
+     * returns orderlines with products and the corresponding order quantity based
+     * on the
+     * table rows with a quantity greater than 0
+     * 
+     * @return List of OrderLine instances
+     */
     public List<OrderLine> getOrderLines() {
         List<OrderLine> orderLines = new ArrayList<>();
         for (int i = 0; i < products.size(); i++) {
             int quantity = quantities.get(i);
             if (quantity > 0) {
-                System.out.println("*** creating order line from table for product id " + products.get(i) + " titled '"
-                        + products.get(i).getTitle() + "'' with quantity " + quantity);
                 orderLines.add(new OrderLine(products.get(i), quantity));
             }
         }

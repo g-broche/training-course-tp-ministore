@@ -3,6 +3,7 @@ package com.gbroche.view.components.order;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -30,6 +32,7 @@ import com.gbroche.service.DatabaseService;
 import com.gbroche.view.components.product.ProductOrderTableModel;
 import com.gbroche.view.components.product.ProductTableModel;
 import com.gbroche.view.components.shared.ViewPanel;
+import com.gbroche.view.components.shared.form.groups.ComboBoxInput;
 
 public class OrderPlacement extends ViewPanel {
 
@@ -65,6 +68,11 @@ public class OrderPlacement extends ViewPanel {
         changeContent(wrapperPanel);
     }
 
+    /**
+     * Creates control with customer selector and button to place order
+     * 
+     * @return JPanel with the two inputs
+     */
     private JPanel createControls() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -87,25 +95,44 @@ public class OrderPlacement extends ViewPanel {
         return panel;
     }
 
+    /**
+     * Request an update of the view dynamic content
+     */
     public void updateView() {
+        customers = CustomerDao.getInstance().getCustomers();
         products = ProductDao.getInstance().getAllProducts();
-        // ProductOrderTableModel model = (ProductOrderTableModel)
-        // productTable.getModel();
+        customerSelector.setModel(new DefaultComboBoxModel<>(extractCustomerNames(customers)));
         tableModel.updateWithData(products);
     }
 
+    /**
+     * Creates table with products available to order
+     * 
+     * @param products
+     * @return
+     */
     private JTable createTable(List<Product> products) {
         tableModel = new ProductOrderTableModel(products);
         JTable table = new JTable(tableModel);
         return table;
     }
 
+    /**
+     * Extract array of names from a list of Customer
+     * 
+     * @param customers
+     * @return String array
+     */
     private String[] extractCustomerNames(List<Customer> customers) {
         return customers.stream()
                 .map(Customer::getFullName)
                 .toArray(String[]::new);
     }
 
+    /**
+     * Handle the whole logic required to place an order from retrieving inputed
+     * values to calling DAO methods and wripping them in a transaction
+     */
     private void placeOrder() {
         if (productTable.isEditing()) {
             productTable.getCellEditor().stopCellEditing();
@@ -114,14 +141,19 @@ public class OrderPlacement extends ViewPanel {
         try {
             // preparing derived values required to add new order
             List<OrderLine> rawOrderLines = tableModel.getOrderLines();
+            if (rawOrderLines.isEmpty()) {
+                throw new IOException("No quantity were selected on any product to place an order");
+            }
+
             final double totalWithoutTax = calculateNetTotal(rawOrderLines);
             System.out.println(">>> total without taxes: " + totalWithoutTax);
-            final double totalWithTax = new BigDecimal(totalWithoutTax + totalWithoutTax * tax)
-                    .setScale(2, RoundingMode.FLOOR)
-                    .doubleValue();
-            System.out.println(">>> total with taxes: " + totalWithoutTax);
+
+            final double totalWithTax = calculateTaxedTotal(totalWithoutTax);
+            System.out.println(">>> total with taxes: " + totalWithTax);
+
             final int customerId = getSelectedCustomerId();
             System.out.println(">>> selected customer id: " + customerId);
+
             final LocalDate orderDate = LocalDate.now();
             System.out.println(">>> date of order: " + orderDate);
 
@@ -146,6 +178,7 @@ public class OrderPlacement extends ViewPanel {
                 // decrease product stock
                 boolean isProductStockDecreaseSuccess = ProductDao.getInstance().decreaseStock(productId,
                         amountOrdered, connection);
+                // throw exception if quantity ask is superior to stock for a product
                 if (!isProductStockDecreaseSuccess) {
                     throw new Exception("Error : Failed to reduce stock of product id <" + productId
                             + "> by order line amount " + amountOrdered);
@@ -159,7 +192,7 @@ public class OrderPlacement extends ViewPanel {
                 }
                 lineId++;
                 System.out.println(">>> added line during transaction on order <" + orderId + "> for <" + amountOrdered
-                        + "> " + rawOrderLine.getProduct().getTitle() + "> (id: " + productId + ")");
+                        + "> <" + rawOrderLine.getProduct().getTitle() + "> (id: " + productId + ")");
             }
             // if everything is successful commit changes with transaction
             dbService.commit();
@@ -169,11 +202,12 @@ public class OrderPlacement extends ViewPanel {
                     "Successfully placed new order with id " + orderId,
                     "Order placed",
                     JOptionPane.INFORMATION_MESSAGE);
+
         } catch (Exception e) {
-            System.err.println("Order was not successfully placed :" + e.getMessage());
+            System.err.println("Order was not successfully placed : " + e.getMessage());
             JOptionPane.showMessageDialog(
                     null,
-                    "Order was not successfully placed :" + e.getMessage(),
+                    "Order was not successfully placed : " + e.getMessage(),
                     "Order failed",
                     JOptionPane.ERROR_MESSAGE);
             // if any error occured and connection is open then rollback the transaction and
@@ -182,10 +216,18 @@ public class OrderPlacement extends ViewPanel {
                 dbService.rollback();
                 dbService.closeConnection();
             }
+        } finally {
+            updateView();
         }
-
     }
 
+    /**
+     * Calculates total price of the order before computing taxes
+     * 
+     * @param orderLines list of inputed order lines
+     * @return
+     * @throws Exception
+     */
     private double calculateNetTotal(List<OrderLine> orderLines) throws Exception {
         double netTotal = 0;
         for (OrderLine orderLine : orderLines) {
@@ -208,6 +250,22 @@ public class OrderPlacement extends ViewPanel {
                 .doubleValue();
     }
 
+    /**
+     * Apply tax to non taxed total price
+     * 
+     * @param totalWithoutTax
+     * @return
+     */
+    private double calculateTaxedTotal(double totalWithoutTax) {
+        return new BigDecimal(totalWithoutTax + totalWithoutTax * (tax / 100))
+                .setScale(2, RoundingMode.FLOOR)
+                .doubleValue();
+    }
+
+    /**
+     * 
+     * @return Id of user selected in the combo box
+     */
     private int getSelectedCustomerId() {
         int indexSelected = customerSelector.getSelectedIndex();
         return customers.get(indexSelected).getId();
