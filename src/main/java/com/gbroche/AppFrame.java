@@ -27,5 +27,6 @@ public class AppFrame extends JFrame {
         menu.setListenerClientIndex(e -> mainPanel.showView("CustomerIndex"));
         menu.setListenerClientAdd(e -> mainPanel.showView("CustomerAdd"));
         menu.setListenerProductIndex(e -> mainPanel.showView("ProductIndex"));
+        menu.setListenerOrderPlacement(e -> mainPanel.showView("OrderPlacement"));
     }
 }
