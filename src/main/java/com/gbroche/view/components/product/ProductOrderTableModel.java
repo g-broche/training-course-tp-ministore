@@ -10,10 +10,10 @@ import com.gbroche.model.Product;
 
 public class ProductOrderTableModel extends AbstractTableModel {
 
-    private final List<Product> products;
-    private final List<Integer> quantities;
+    private List<Product> products;
+    private List<Integer> quantities;
 
-    private final String[] columnNames = {"Id", "Title", "Category", "Stock", "Price", "Order amount"};
+    private final String[] columnNames = { "Id", "Title", "Category", "Stock", "Price", "Order amount" };
 
     public ProductOrderTableModel(List<Product> products) {
         this.products = products;
@@ -71,10 +71,20 @@ public class ProductOrderTableModel extends AbstractTableModel {
                 int quantity = Integer.parseInt(value.toString());
                 quantities.set(row, Math.max(quantity, 0)); // no negatives
                 fireTableCellUpdated(row, col);
+                System.out.println(">>> Set quantity for row " + row + " to " + quantity);
             } catch (NumberFormatException ignored) {
                 quantities.set(row, 0);
             }
         }
+    }
+
+    public void updateWithData(List<Product> newProducts) {
+        this.products = newProducts;
+        this.quantities = new ArrayList<>();
+        for (int i = 0; i < newProducts.size(); i++) {
+            quantities.add(0);
+        }
+        fireTableDataChanged();
     }
 
     public List<OrderLine> getOrderLines() {
@@ -82,6 +92,8 @@ public class ProductOrderTableModel extends AbstractTableModel {
         for (int i = 0; i < products.size(); i++) {
             int quantity = quantities.get(i);
             if (quantity > 0) {
+                System.out.println("*** creating order line from table for product id " + products.get(i) + " titled '"
+                        + products.get(i).getTitle() + "'' with quantity " + quantity);
                 orderLines.add(new OrderLine(products.get(i), quantity));
             }
         }

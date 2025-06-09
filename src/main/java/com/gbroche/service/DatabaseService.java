@@ -28,6 +28,14 @@ public class DatabaseService {
         return instance;
     }
 
+    public boolean isConnectionOpen() {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public void openConnection() throws SQLException {
         connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
@@ -39,11 +47,15 @@ public class DatabaseService {
         return connection;
     }
 
-    public void closeConnection() throws SQLException {
-        if (connection != null && !connection.isClosed()) {
-            connection.close();
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+            connection = null;
+        } catch (SQLException e) {
+            System.err.println("Failed to close transaction; error:'" + e.getMessage() + "'");
         }
-        connection = null;
     }
 
     public void setAutoCommit(boolean mustBeAutomatic) throws SQLException {
@@ -54,8 +66,12 @@ public class DatabaseService {
         connection.commit();
     }
 
-    public void rollback() throws SQLException {
-        connection.rollback();
+    public void rollback() {
+        try {
+            connection.rollback();
+        } catch (SQLException e) {
+            System.err.println("Failed to rollback transaction; error:'" + e.getMessage() + "'");
+        }
     }
 
 }
