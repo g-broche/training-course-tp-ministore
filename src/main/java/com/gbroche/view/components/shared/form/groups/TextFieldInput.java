@@ -4,6 +4,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JTextField;
 
+/**
+ * Class used to manage and valide text field inputs.
+ */
 public class TextFieldInput implements FormInput {
 
     private final JTextField field;
@@ -17,6 +20,9 @@ public class TextFieldInput implements FormInput {
         return this;
     }
 
+    /**
+     * gives direct access to this class JTextField
+     */
     @Override
     public JTextField getComponent() {
         return field;
@@ -32,6 +38,9 @@ public class TextFieldInput implements FormInput {
         field.setText(value);
     }
 
+    /**
+     * Provides access to the related text field to add listener
+     */
     @Override
     public void addListener(ActionListener listener) {
         field.addActionListener(listener);

@@ -2,6 +2,9 @@ package com.gbroche.view.components.shared.form.validators;
 
 import java.util.regex.Pattern;
 
+/**
+ * Email validator class with pattern check specific to email format
+ */
 public class EmailValidator implements Validator {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\w-.]+@[\\w-]+\\.[a-zA-Z]{2,}$");

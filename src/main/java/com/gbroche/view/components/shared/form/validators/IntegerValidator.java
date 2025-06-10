@@ -1,5 +1,9 @@
 package com.gbroche.view.components.shared.form.validators;
 
+/**
+ * Integer validator class which checks if a string input can be parsed to a
+ * valid integer
+ */
 public class IntegerValidator implements Validator {
 
     @Override

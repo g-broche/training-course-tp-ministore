@@ -1,5 +1,9 @@
 package com.gbroche.view.components.shared.form.validators;
 
+/**
+ * Max lenght validator, validates if a string has a length shorter than the
+ * integer given to the constructor
+ */
 public class MaxLengthValidator implements Validator {
 
     private final int max;
