@@ -24,10 +24,13 @@ public class AppFrame extends JFrame {
         setJMenuBar(menu);
         add(mainPanel, BorderLayout.CENTER);
 
+        // Use listeners defined in MenuBar to generate and display the requested view
+        // depending on which menu item was clicked
         menu.setListenerClientIndex(e -> mainPanel.showView("CustomerIndex"));
         menu.setListenerClientAdd(e -> mainPanel.showView("CustomerAdd"));
         menu.setListenerProductIndex(e -> mainPanel.showView("ProductIndex"));
         menu.setListenerOrderPlacement(e -> mainPanel.showView("OrderPlacement"));
         menu.setListenerOrderHistory(e -> mainPanel.showView("OrderHistory"));
+        menu.setListenerSurveyStocks(e -> mainPanel.showView("SurveyStocks"));
     }
 }
