@@ -36,12 +36,18 @@ public class OrderHistory extends ViewPanel {
     private JScrollPane scrollPane;
     private JPanel orderListWrapper;
 
+    /**
+     * Component handling the view of order history for customers
+     */
     public OrderHistory() {
         super("Order history");
         customers = CustomerDao.getInstance().getCustomersWithOrderHistory();
         buildContent();
     }
 
+    /**
+     * Build initial component content on creation
+     */
     @Override
     protected void buildContent() {
         wrapperPanel = new JPanel();
@@ -90,7 +96,7 @@ public class OrderHistory extends ViewPanel {
             customerOrders = OrderDao.getInstance().getOrderHistoryByViewerId(selectedCustomer.getId(), connection);
             fillHistoryPanel(selectedCustomer, customerOrders);
         } catch (Exception e) {
-            // TODO: handle exception
+            throw new RuntimeException("failed to retrieve customer history");
         }
     }
 
@@ -103,18 +109,29 @@ public class OrderHistory extends ViewPanel {
         return customers.get(indexSelected);
     }
 
+    /**
+     * Display data for all orders registered for a customer
+     * 
+     * @param customer
+     * @param orders
+     */
     private void fillHistoryPanel(Customer customer, List<Order> orders) {
+        // clear previous content
         orderListWrapper.removeAll();
+        // display user name as a heading
         JLabel userNameLabel = new JLabel(customer.getFullName());
         userNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         orderListWrapper.add(Box.createVerticalStrut(10));
         orderListWrapper.add(userNameLabel);
         orderListWrapper.add(Box.createVerticalStrut(10));
+
+        // for all orders, create a component displaying each order data
         for (Order order : orders) {
             JPanel orderPanel = createOrderSummary(order);
             orderListWrapper.add(Box.createVerticalStrut(20));
             orderListWrapper.add(orderPanel);
         }
+        // refresh UI with new data
         orderListWrapper.revalidate();
         orderListWrapper.repaint();
     }
@@ -144,6 +161,10 @@ public class OrderHistory extends ViewPanel {
         table.setFillsViewportHeight(true);
         table.setPreferredScrollableViewportSize(null);
 
+        // Avoiding the standard behavior of wrapping the table inside the scroll pane
+        // in order to have a more reliable vertical sizing of the order summary. A side
+        // effect of table not being wrapped in a scroll pane is the removal of the
+        // table header display which is compensated by adding it manually here
         orderPanel.add(table.getTableHeader());
         orderPanel.add(table);
         orderPanel.add(Box.createVerticalStrut(10));

@@ -33,6 +33,9 @@ public class SurveyStocks extends ViewPanel {
     private JScrollPane scrollPane;
     private JTable productTable;
 
+    /**
+     * View to display stocks of products below a user inputed threshold
+     */
     public SurveyStocks() {
         super("Survey stocks");
         products = ProductDao.getInstance().getAllProductsBelowStockThreshold(threshold);

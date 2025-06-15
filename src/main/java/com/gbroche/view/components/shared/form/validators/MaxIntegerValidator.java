@@ -1,5 +1,9 @@
 package com.gbroche.view.components.shared.form.validators;
 
+/**
+ * Max integer validator class, validates if a string is a valid integer below
+ * the value give to the constructor
+ */
 public class MaxIntegerValidator implements Validator {
 
     private final int max;

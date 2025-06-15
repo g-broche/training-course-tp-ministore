@@ -27,6 +27,9 @@ public final class ProductIndex extends ViewPanel {
     private JTable productTable;
     private JComboBox<String> categorySelector;
 
+    /**
+     * View to display all products in a grid with the ability to filter by category
+     */
     public ProductIndex() {
         super("Product index");
         categories = generateCategories();
@@ -34,6 +37,9 @@ public final class ProductIndex extends ViewPanel {
         buildContent();
     }
 
+    /**
+     * Builds content when component is created
+     */
     @Override
     protected void buildContent() {
         wrapperPanel = new JPanel();
@@ -49,30 +55,44 @@ public final class ProductIndex extends ViewPanel {
         changeContent(wrapperPanel);
     }
 
+    /**
+     * Updates the dynamic content of the view back to its default state to watch
+     * for new categories
+     * or products.
+     * used when component is loaded back into current view.
+     */
     public void updateView() {
         clearCategoryData();
         categories = generateCategories();
         categorySelector.setModel(new DefaultComboBoxModel<>(categories.toArray(new String[0])));
         products = ProductDao.getInstance().getAllProducts();
         ProductTableModel model = (ProductTableModel) productTable.getModel();
-        String selectedCategory
-                = categorySelector.getSelectedItem() != null
+        String selectedCategory = categorySelector.getSelectedItem() != null
                 ? categorySelector.getSelectedItem().toString()
                 : "";
         List<Product> productsToDisplay = filterProductsByCategory(selectedCategory);
         model.updateWithData(productsToDisplay);
     }
 
+    /**
+     * Updates table to display products based on the selected category
+     */
     public void filterTable() {
         ProductTableModel model = (ProductTableModel) productTable.getModel();
-        String selectedCategory
-                = categorySelector.getSelectedItem() != null
+        String selectedCategory = categorySelector.getSelectedItem() != null
                 ? categorySelector.getSelectedItem().toString()
                 : "";
         List<Product> productsToDisplay = filterProductsByCategory(selectedCategory);
         model.updateWithData(productsToDisplay);
     }
 
+    /**
+     * Filter products based on the selected category
+     * 
+     * @param category name of the category
+     * @return List of Products matching the category or all products if no category
+     *         selected
+     */
     public List<Product> filterProductsByCategory(String category) {
         if (category.equals("All Categories")) {
             return products;
@@ -82,20 +102,29 @@ public final class ProductIndex extends ViewPanel {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Creates table and fills it with products
+     * 
+     * @param products
+     * @return
+     */
     private JTable createTable(List<Product> products) {
         ProductTableModel model = new ProductTableModel(products);
         JTable table = new JTable(model);
         return table;
     }
 
+    /**
+     * Retrieves categories from the database to get a list of category and also a
+     * list of category name used to fille the category selector
+     * 
+     * @return a list of category names to de used for filling the category selector
+     */
     private List<String> generateCategories() {
         List<Category> foundCategories = CategoryDao.getInstance().getCategories();
         List<String> categoryNames = foundCategories.stream()
                 .map(Category::getName)
                 .collect(Collectors.toList());
-        for (String category : categoryNames) {
-            System.out.println(category);
-        }
         categoryNames.add(0, "All Categories");
         return categoryNames;
     }

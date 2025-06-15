@@ -8,6 +8,10 @@ import javax.swing.table.AbstractTableModel;
 import com.gbroche.model.OrderLine;
 import com.gbroche.model.Product;
 
+/**
+ * Table model for displaying products data and also inputing a quantity for
+ * ordering
+ */
 public class ProductOrderTableModel extends AbstractTableModel {
 
     private List<Product> products;

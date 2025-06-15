@@ -12,6 +12,9 @@ import java.util.Map;
 import com.gbroche.model.Customer;
 import com.gbroche.service.DatabaseService;
 
+/**
+ * Manages requests involving customer in the database
+ */
 public class CustomerDao {
 
     private static CustomerDao instance;
@@ -28,11 +31,16 @@ public class CustomerDao {
         return instance;
     }
 
+    /**
+     * Retrieves all customers ordered from newest added to oldest
+     * 
+     * @return List of customers
+     */
     public List<Customer> getCustomers() {
         List<Customer> customersFound = new ArrayList<>();
         try (Connection connection = databaseService.getConnection()) {
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM customers ORDER BY customerid DESC LIMIT 5");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM customers ORDER BY customerid DESC");
             while (rs.next()) {
                 customersFound.add(
                         new Customer(
@@ -54,6 +62,11 @@ public class CustomerDao {
         return customersFound;
     }
 
+    /**
+     * Gets customers with their related orders
+     * 
+     * @return
+     */
     public List<Customer> getCustomersWithOrderHistory() {
         List<Customer> customersFound = new ArrayList<>();
         try (Connection connection = databaseService.getConnection()) {
@@ -86,6 +99,12 @@ public class CustomerDao {
         return customersFound;
     }
 
+    /**
+     * add new customer
+     * 
+     * @param inputs required customer data
+     * @return
+     */
     public boolean addCustomer(Map<String, String> inputs) {
         try (Connection connection = databaseService.getConnection()) {
             String query = "{ ? = call new_customer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";

@@ -10,6 +10,9 @@ import java.util.List;
 import com.gbroche.model.Country;
 import com.gbroche.service.DatabaseService;
 
+/**
+ * Manages requests involving countries in the database
+ */
 public class CountryDao {
 
     private static CountryDao instance;
@@ -35,9 +38,7 @@ public class CountryDao {
                 countriesFound.add(
                         new Country(
                                 rs.getString("code"),
-                                rs.getString("name")
-                        )
-                );
+                                rs.getString("name")));
             }
             databaseService.closeConnection();
         } catch (SQLException e) {

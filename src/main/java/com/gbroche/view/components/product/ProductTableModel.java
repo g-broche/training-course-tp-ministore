@@ -6,10 +6,13 @@ import javax.swing.table.AbstractTableModel;
 
 import com.gbroche.model.Product;
 
+/**
+ * Table model for displaying products data
+ */
 public class ProductTableModel extends AbstractTableModel {
 
     private List<Product> products;
-    private final String[] columnNames = {"ID", "Title", "Category", "Actor", "Price", "Stock"};
+    private final String[] columnNames = { "ID", "Title", "Category", "Actor", "Price", "Stock" };
 
     public ProductTableModel(List<Product> products) {
         this.products = products;
@@ -46,9 +49,14 @@ public class ProductTableModel extends AbstractTableModel {
         };
     }
 
-    public void updateWithData(List<Product> newproducts) {
-        this.products = newproducts;
-        fireTableDataChanged(); // Notifies the JTable to refresh its view
+    /**
+     * Updates the content of the table
+     * 
+     * @param newProducts list of products
+     */
+    public void updateWithData(List<Product> newProducts) {
+        this.products = newProducts;
+        fireTableDataChanged();
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.gbroche.view.components.shared.form.validators;
 
+/**
+ * Required validator, validates that a string is not empty or null
+ */
 public class RequiredValidator implements Validator {
 
     @Override

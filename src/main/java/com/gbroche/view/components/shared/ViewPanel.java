@@ -9,6 +9,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
+/**
+ * Abstract class intended to be herited by all view creating component in order
+ * to maintain
+ * consistency between views
+ */
 public abstract class ViewPanel extends JPanel {
 
     private String title;
@@ -18,13 +23,13 @@ public abstract class ViewPanel extends JPanel {
     public ViewPanel(String title) {
         setLayout(new BorderLayout());
 
-        // Title section
+        // title of the view
         this.title = title;
         titleLabel = new JLabel(this.title, SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Content section
+        // Dynamic content
         contentPanel = new JPanel();
         contentPanel.setLayout(new BorderLayout());
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -44,15 +49,28 @@ public abstract class ViewPanel extends JPanel {
         this.titleLabel.setText(this.title);
     }
 
+    /**
+     * Change the dynamic content to display the given JPanel
+     * 
+     * @param contentWrapper
+     */
     protected void changeContent(JPanel contentWrapper) {
         this.contentPanel.removeAll();
         this.contentPanel.add(contentWrapper);
     }
 
+    /**
+     * Change the dynamic content to display the given JScrollPane
+     * 
+     * @param contentWrapper
+     */
     protected void changeContent(JScrollPane contentWrapper) {
         this.contentPanel.removeAll();
         this.contentPanel.add(contentWrapper);
     }
 
+    /**
+     * Method to override by child classes to build the component content
+     */
     protected abstract void buildContent();
 }
