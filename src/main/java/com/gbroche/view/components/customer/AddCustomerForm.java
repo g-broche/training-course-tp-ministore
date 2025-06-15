@@ -34,6 +34,9 @@ import com.gbroche.view.components.shared.form.validators.MinLengthValidator;
 import com.gbroche.view.components.shared.form.validators.RequiredValidator;
 import com.gbroche.view.components.shared.form.validators.Validator;
 
+/**
+ * Component for the view letting the user add a new customer
+ */
 public final class AddCustomerForm extends ViewPanel {
 
     private JPanel form;
@@ -58,23 +61,31 @@ public final class AddCustomerForm extends ViewPanel {
     private FormGroup genderField;
     private JButton submit;
 
+    // list of FormGroup instances used for inputs validations and interactions
     private final List<FormGroup> formGroups = new ArrayList<>();
 
     private Map<String, String> countryMap = new LinkedHashMap<>();
     private Map<Integer, String> cityMap = new LinkedHashMap<>();
-    private final String[] genders = new String[]{"M", "F", "N"};
+    private final String[] genders = new String[] { "M", "F", "N" };
 
     public AddCustomerForm() {
         super("Add Customer");
         buildContent();
     }
 
+    /**
+     * Build component content on creation
+     */
     @Override
     protected void buildContent() {
         form = new JPanel(new GridBagLayout());
         loadAvailableCountries();
         generateFields();
-        int nextRow = createLayout(); // Get the next available row index to append the form button
+        // Uncomment line below to preload the fields with working values
+        // fillFieldsForTest()
+        // Get the next available row index to append the form button
+        int nextRow = createLayout();
+        // Add button at the bottom of the GridBagLayout
         addButtonToView(nextRow);
         JScrollPane scrollPane = new JScrollPane(form);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -85,6 +96,11 @@ public final class AddCustomerForm extends ViewPanel {
         changeContent(scrollPane);
     }
 
+    /**
+     * Validates if valid data was inputed and in such case will call the
+     * CustomerDao to insert the
+     * the new custormer based on inputs data
+     */
     private void handleSubmit() {
         if (!isFormValid()) {
             System.out.println("form is invalid");
@@ -98,19 +114,22 @@ public final class AddCustomerForm extends ViewPanel {
                     null,
                     "An error occurred while attempting to add the user to the database, a user with similar data may already exist and cause a conflict",
                     "Error creating new user",
-                    JOptionPane.ERROR_MESSAGE
-            );
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
         JOptionPane.showMessageDialog(
                 null,
                 "User was successfully added",
                 "User created",
-                JOptionPane.INFORMATION_MESSAGE
-        );
+                JOptionPane.INFORMATION_MESSAGE);
         resetFields();
     }
 
+    /**
+     * Iterates through each FormGroup of the form to check if they are all valid
+     * 
+     * @return true if all input are valid, false otherwise
+     */
     private boolean isFormValid() {
         List<Boolean> validationResults = new ArrayList<>();
         for (FormGroup formGroup : formGroups) {
@@ -119,6 +138,10 @@ public final class AddCustomerForm extends ViewPanel {
         return !validationResults.isEmpty() && validationResults.stream().allMatch(Boolean::booleanValue);
     }
 
+    /**
+     * Retrieves the inputed data using the FormGroups' name to create a map of
+     * key:value that will be used for binding values in the DAO query statement
+     */
     private Map<String, String> getInputsForBinding() {
         Map<String, String> inputResults = new HashMap<>();
         for (FormGroup formGroup : formGroups) {
@@ -131,6 +154,12 @@ public final class AddCustomerForm extends ViewPanel {
         return inputResults;
     }
 
+    /**
+     * Creates the form layout
+     * 
+     * @return next row if the GridBag layout to add the submit button below the
+     *         inputs
+     */
     private int createLayout() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -159,9 +188,12 @@ public final class AddCustomerForm extends ViewPanel {
             gbc.gridy++;
         }
 
-        return gbc.gridy; // Return the next available row index
+        return gbc.gridy;
     }
 
+    /**
+     * Generate all form groups
+     */
     private void generateFields() {
         generateFirstNameField();
         generateLastNameField();
@@ -197,44 +229,49 @@ public final class AddCustomerForm extends ViewPanel {
 
     private void generateFirstNameField() {
         firstNameField = new FormGroup("firstname", "First name", new TextFieldInput());
-        firstNameField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50)
+        firstNameField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50)
         });
         formGroups.add(firstNameField);
     }
 
     private void generateLastNameField() {
         lastNameField = new FormGroup("lastname", "Last name", new TextFieldInput());
-        lastNameField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50)
+        lastNameField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50)
         });
         formGroups.add(lastNameField);
     }
 
     private void generateAddress1Field() {
         address1Field = new FormGroup("address1", "Address", new TextFieldInput());
-        address1Field.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50)
+        address1Field.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50)
         });
         formGroups.add(address1Field);
     }
 
     private void generateAddress2Field() {
         address2Field = new FormGroup("address2", "Address (complement)", new TextFieldInput());
-        address2Field.addValidators(new Validator[]{
-            new MaxLengthValidator(50)
+        address2Field.addValidators(new Validator[] {
+                new MaxLengthValidator(50)
         });
         formGroups.add(address2Field);
     }
 
+    /**
+     * Generate the country field but also as a side effect to change available
+     * cities in the city collector based on the currently selected country
+     */
     private void generateCountryField() {
-        countryField = new FormGroup("country", "Country", new ComboBoxInput(countryMap.keySet().toArray(new String[0])));
-        countryField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50)
+        countryField = new FormGroup("country", "Country",
+                new ComboBoxInput(countryMap.keySet().toArray(new String[0])));
+        countryField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50)
         });
         formGroups.add(countryField);
         countryField.getInputInstance().addListener(e -> {
@@ -251,18 +288,18 @@ public final class AddCustomerForm extends ViewPanel {
     private void generateCityField() {
         loadAvailableCities(getCodeOfSelectedCountry());
         cityField = new FormGroup("city", "City", new ComboBoxInput(cityMap.values().toArray(new String[0])));
-        cityField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50)
+        cityField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50)
         });
         formGroups.add(cityField);
     }
 
     private void generateStateField() {
         stateField = new FormGroup("state", "State", new TextFieldInput());
-        stateField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50)
+        stateField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50)
         });
         formGroups.add(stateField);
     }
@@ -274,106 +311,111 @@ public final class AddCustomerForm extends ViewPanel {
 
     private void generateRegionField() {
         regionField = new FormGroupInteger("region", "Region", new TextFieldInput());
-        regionField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxIntegerValidator(65535)
+        regionField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxIntegerValidator(65535)
         });
         formGroups.add(regionField);
     }
 
     private void generateEmailField() {
         emailField = new FormGroup("email", "Email", new TextFieldInput());
-        emailField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new EmailValidator(),
-            new MaxLengthValidator(50)
+        emailField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new EmailValidator(),
+                new MaxLengthValidator(50)
         });
         formGroups.add(emailField);
     }
 
     private void generatePhoneField() {
         phoneField = new FormGroup("phone", "Phone", new TextFieldInput());
-        phoneField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50),
-            new MinLengthValidator(10)
+        phoneField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50),
+                new MinLengthValidator(10)
         });
         formGroups.add(phoneField);
     }
 
     private void generateCreditCardTypeField() {
         creditCardTypeField = new FormGroupInteger("creditcardtype", "Credit card type", new TextFieldInput());
-        creditCardTypeField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxIntegerValidator(65535)
+        creditCardTypeField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxIntegerValidator(65535)
         });
         formGroups.add(creditCardTypeField);
     }
 
     private void generateCreditCardField() {
         creditCardField = new FormGroup("creditcard", "Card number", new TextFieldInput());
-        creditCardField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50),
-            new MinLengthValidator(10)
+        creditCardField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50),
+                new MinLengthValidator(10)
         });
         formGroups.add(creditCardField);
     }
 
     private void generateCreditCardExpirationField() {
         creditCardExpirationField = new FormGroup("creditcardexpiration", "Expiration date", new TextFieldInput());
-        creditCardExpirationField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50),
-            new MinLengthValidator(5)
+        creditCardExpirationField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50),
+                new MinLengthValidator(5)
         });
         formGroups.add(creditCardExpirationField);
     }
 
     private void generateUsernameField() {
         usernameField = new FormGroup("username", "Username", new TextFieldInput());
-        usernameField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MaxLengthValidator(50)
+        usernameField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MaxLengthValidator(50)
         });
         formGroups.add(usernameField);
     }
 
     private void generatePasswordField() {
         passwordField = new FormGroup("password", "Password", new TextFieldInput());
-        passwordField.addValidators(new Validator[]{
-            new RequiredValidator(),
-            new MinLengthValidator(10),
-            new MaxLengthValidator(50)
+        passwordField.addValidators(new Validator[] {
+                new RequiredValidator(),
+                new MinLengthValidator(10),
+                new MaxLengthValidator(50)
         });
         formGroups.add(passwordField);
     }
 
     private void generateAgeField() {
         ageField = new FormGroupInteger("age", "Age", new TextFieldInput());
-        ageField.addValidators(new Validator[]{
-            new MinIntegerValidator(16),
-            new MaxIntegerValidator(130)
+        ageField.addValidators(new Validator[] {
+                new MinIntegerValidator(16),
+                new MaxIntegerValidator(130)
         });
         formGroups.add(ageField);
     }
 
     private void generateIncomeField() {
         incomeField = new FormGroupInteger("income", "Income", new TextFieldInput());
-        incomeField.addValidators(new Validator[]{
-            new MinIntegerValidator(0)
+        incomeField.addValidators(new Validator[] {
+                new MinIntegerValidator(0)
         });
         formGroups.add(incomeField);
     }
 
     private void generateGenderField() {
         genderField = new FormGroup("gender", "Gender", new ComboBoxInput(genders));
-        genderField.addValidators(new Validator[]{
-            new MaxLengthValidator(1)
+        genderField.addValidators(new Validator[] {
+                new MaxLengthValidator(1)
         });
         formGroups.add(genderField);
     }
 
+    /**
+     * Retrieves all available countriers and fills the countryMapp with the
+     * countries' name as key and their code as value in order to easily retrieve
+     * the value from the country name that will be used in the country selector
+     */
     private void loadAvailableCountries() {
         countryMap.clear();
         countryMap = CountryDao.getInstance().getAllCountries().stream()
@@ -381,10 +423,15 @@ public final class AddCustomerForm extends ViewPanel {
                         Country::getName,
                         Country::getCode,
                         (existing, replacement) -> existing,
-                        LinkedHashMap::new
-                ));
+                        LinkedHashMap::new));
     }
 
+    /**
+     * Retrieves all available countries for a given country code and stores the
+     * data in a Map with the city id as key and its name as value
+     * 
+     * @param countryCode
+     */
     private void loadAvailableCities(String countryCode) {
         cityMap.clear();
         cityMap = CityDao.getInstance().getCitiesByCountryCode(countryCode).stream()
@@ -392,15 +439,22 @@ public final class AddCustomerForm extends ViewPanel {
                         City::getId,
                         City::getName,
                         (existing, replacement) -> existing,
-                        LinkedHashMap::new
-                ));
+                        LinkedHashMap::new));
     }
 
+    /**
+     * clear all city related data from both the cityMap and the city field
+     */
     private void clearCityData() {
         cityMap.clear();
-        countryField.getInputInstance().getComponent().removeAll();
+        cityField.getInputInstance().getComponent().removeAll();
     }
 
+    /**
+     * Updates the available cities for selection in the city selector
+     * 
+     * @param countryCode
+     */
     private void updateCityField(String countryCode) {
         loadAvailableCities(countryCode);
         if (cityField != null) {
@@ -409,6 +463,13 @@ public final class AddCustomerForm extends ViewPanel {
         }
     }
 
+    /**
+     * Retrieves the country code of a selected country by using the selected
+     * country name to navigate the countryMap
+     * 
+     * @return String with the country code of selected country if one, otherwise
+     *         null
+     */
     private String getCodeOfSelectedCountry() {
         if (countryField.getValue().isEmpty()) {
             return null;
@@ -416,6 +477,10 @@ public final class AddCustomerForm extends ViewPanel {
         return countryMap.get(countryField.getValue());
     }
 
+    /**
+     * function for testing form that will preload the input text fields with
+     * working values. If used, place after field generation
+     */
     private void fillFieldsForTest() {
         firstNameField.setValue("firstname test");
         lastNameField.setValue("lastname test");
@@ -435,6 +500,9 @@ public final class AddCustomerForm extends ViewPanel {
         incomeField.setValue("40000");
     }
 
+    /**
+     * Clears all text field inputs
+     */
     private void resetFields() {
         firstNameField.setValue("");
         lastNameField.setValue("");

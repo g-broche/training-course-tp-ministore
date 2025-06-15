@@ -6,10 +6,13 @@ import javax.swing.table.AbstractTableModel;
 
 import com.gbroche.model.Customer;
 
+/**
+ * Model used to display a table of customers
+ */
 public class CustomerTableModel extends AbstractTableModel {
 
     private List<Customer> customers;
-    private final String[] columnNames = {"ID", "Full Name", "Country", "State", "City"};
+    private final String[] columnNames = { "ID", "Full Name", "Country", "State", "City" };
 
     public CustomerTableModel(List<Customer> customers) {
         this.customers = customers;
@@ -44,9 +47,14 @@ public class CustomerTableModel extends AbstractTableModel {
         };
     }
 
+    /**
+     * refreshes table to display new list of customers
+     * 
+     * @param newCustomers list of customers
+     */
     public void updateWithData(List<Customer> newCustomers) {
         this.customers = newCustomers;
-        fireTableDataChanged(); // Notifies the JTable to refresh its view
+        fireTableDataChanged();
     }
 
     @Override

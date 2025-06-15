@@ -10,6 +10,9 @@ import java.util.List;
 import com.gbroche.model.Category;
 import com.gbroche.service.DatabaseService;
 
+/**
+ * Manages requests involving categories in the database
+ */
 public class CategoryDao {
 
     private static CategoryDao instance;
@@ -26,6 +29,11 @@ public class CategoryDao {
         return instance;
     }
 
+    /**
+     * return all existing categories
+     * 
+     * @return List of categories
+     */
     public List<Category> getCategories() {
         List<Category> categoriesFound = new ArrayList<>();
         try (Connection connection = databaseService.getConnection()) {
@@ -36,9 +44,7 @@ public class CategoryDao {
                 categoriesFound.add(
                         new Category(
                                 rs.getInt("category"),
-                                rs.getString("categoryname")
-                        )
-                );
+                                rs.getString("categoryname")));
             }
             databaseService.closeConnection();
         } catch (SQLException e) {

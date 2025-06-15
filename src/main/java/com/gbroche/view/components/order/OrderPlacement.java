@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,10 +29,11 @@ import com.gbroche.model.OrderLine;
 import com.gbroche.model.Product;
 import com.gbroche.service.DatabaseService;
 import com.gbroche.view.components.product.ProductOrderTableModel;
-import com.gbroche.view.components.product.ProductTableModel;
 import com.gbroche.view.components.shared.ViewPanel;
-import com.gbroche.view.components.shared.form.groups.ComboBoxInput;
 
+/**
+ * View to place a new order for a customer
+ */
 public class OrderPlacement extends ViewPanel {
 
     private List<Customer> customers;
@@ -54,6 +54,9 @@ public class OrderPlacement extends ViewPanel {
         buildContent();
     }
 
+    /**
+     * Build initial component content on creation
+     */
     @Override
     protected void buildContent() {
         wrapperPanel = new JPanel();
@@ -108,8 +111,8 @@ public class OrderPlacement extends ViewPanel {
     /**
      * Creates table with products available to order
      * 
-     * @param products
-     * @return
+     * @param products List of products
+     * @return created JTable
      */
     private JTable createTable(List<Product> products) {
         tableModel = new ProductOrderTableModel(products);
@@ -120,7 +123,7 @@ public class OrderPlacement extends ViewPanel {
     /**
      * Extract array of names from a list of Customer
      * 
-     * @param customers
+     * @param customers List of customers
      * @return String array
      */
     private String[] extractCustomerNames(List<Customer> customers) {
@@ -225,7 +228,7 @@ public class OrderPlacement extends ViewPanel {
      * Calculates total price of the order before computing taxes
      * 
      * @param orderLines list of inputed order lines
-     * @return
+     * @return price of the whole order without taxes applied
      * @throws Exception
      */
     private double calculateNetTotal(List<OrderLine> orderLines) throws Exception {
@@ -254,7 +257,7 @@ public class OrderPlacement extends ViewPanel {
      * Apply tax to non taxed total price
      * 
      * @param totalWithoutTax
-     * @return
+     * @return total order price with taxes included
      */
     private double calculateTaxedTotal(double totalWithoutTax) {
         return new BigDecimal(totalWithoutTax + totalWithoutTax * (tax / 100))
@@ -263,6 +266,7 @@ public class OrderPlacement extends ViewPanel {
     }
 
     /**
+     * gets the id of the customer currently selected in the customer selector
      * 
      * @return Id of user selected in the combo box
      */

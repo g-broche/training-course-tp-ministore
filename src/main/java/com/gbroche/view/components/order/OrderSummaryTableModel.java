@@ -5,6 +5,9 @@ import javax.swing.table.AbstractTableModel;
 import com.gbroche.model.Order;
 import com.gbroche.model.OrderLine;
 
+/**
+ * Model used for table displaying the details of a given order
+ */
 public class OrderSummaryTableModel extends AbstractTableModel {
 
     private Order order;

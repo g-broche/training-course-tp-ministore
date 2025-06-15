@@ -11,6 +11,9 @@ import java.util.List;
 import com.gbroche.model.Product;
 import com.gbroche.service.DatabaseService;
 
+/**
+ * Manages requests involving products in the database
+ */
 public class ProductDao {
 
     private static ProductDao instance;
