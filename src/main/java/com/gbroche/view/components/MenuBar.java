@@ -23,7 +23,7 @@ public class MenuBar extends JMenuBar {
         this.exit.addActionListener(e -> System.exit(0));
         fileMenu.add(this.exit);
 
-        JMenu clientMenu = new JMenu("Clients");
+        JMenu clientMenu = new JMenu("Customers");
         this.clientIndex = new JMenuItem("Index");
         this.clientAdd = new JMenuItem("Add");
         clientMenu.add(this.clientIndex);
